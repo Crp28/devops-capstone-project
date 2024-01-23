@@ -62,14 +62,27 @@ def create_accounts():
 ######################################################################
 
 # ... place you code here to LIST accounts ...
-
+@app.route("/accounts", methods=["GET"])
+def list_all_accounts():
+    app.logger.info("Processing request to List all products")
+    accounts = Account.all()
+    results = [acc.serialize() for acc in accounts]
+    app.logger.info("[%s] Accounts listed", len(results))
+    return jsonify(results), status.HTTP_200_OK
 
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
 
 # ... place you code here to READ an account ...
-
+@app.route("/accounts/<int:account_id>", methods=["GET"])
+def get_products(account_id):
+    """This endpoint will get an Account based on the given account id"""
+    app.logger.info("Processing request to Retrieve an account with id %s", account_id)
+    account = Account.find(account_id)
+    if not account:
+        abort(status.HTTP_404_NOT_FOUND, 'Product not found')
+    return account.serialize(), status.HTTP_200_OK
 
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
