@@ -64,7 +64,7 @@ def create_accounts():
 # ... place you code here to LIST accounts ...
 @app.route("/accounts", methods=["GET"])
 def list_all_accounts():
-    app.logger.info("Processing request to List all products")
+    app.logger.info("Processing request to List all accounts")
     accounts = Account.all()
     results = [acc.serialize() for acc in accounts]
     app.logger.info("[%s] Accounts listed", len(results))
@@ -76,12 +76,12 @@ def list_all_accounts():
 
 # ... place you code here to READ an account ...
 @app.route("/accounts/<int:account_id>", methods=["GET"])
-def get_products(account_id):
+def get_accounts(account_id):
     """This endpoint will get an Account based on the given account id"""
     app.logger.info("Processing request to Retrieve an account with id %s", account_id)
     account = Account.find(account_id)
     if not account:
-        abort(status.HTTP_404_NOT_FOUND, 'Product not found')
+        abort(status.HTTP_404_NOT_FOUND, 'Account not found')
     return account.serialize(), status.HTTP_200_OK
 
 ######################################################################
@@ -89,7 +89,17 @@ def get_products(account_id):
 ######################################################################
 
 # ... place you code here to UPDATE an account ...
-
+@app.route("/accounts/<int:account_id>", methods=["PUT"])
+def update_accounts(account_id):
+    """This endpoint will update a Account based on the given account id"""
+    app.logger.info("Processing request to Update an account with id %s", account_id)
+    account = Account.find(account_id)
+    if not account:
+        abort(status.HTTP_404_NOT_FOUND, 'Account not found')
+    account.deserialize(request.get_json())
+    account.id = account_id
+    account.update()
+    return account.serialize(), status.HTTP_200_OK
 
 ######################################################################
 # DELETE AN ACCOUNT

@@ -131,11 +131,11 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.get_json(),[])
 
-        products = self._create_accounts(5)
+        accounts = self._create_accounts(5)
         response = self.client.get(f'{BASE_URL}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for i in range(0, 5):
-            self.assertIn(response.get_json()[i]['id'], [product.id for product in products])
+            self.assertIn(response.get_json()[i]['id'], [account.id for account in accounts])
 
     def test_read_account(self):
         """It should Get an Account using REST API"""
@@ -145,7 +145,27 @@ class TestAccountService(TestCase):
         self.assertEqual(response.get_json()['id'],test_acc.id)
         self.assertEqual(response.get_json()['name'],test_acc.name)
 
-    def test_read_product_not_found(self):
+    def test_read_account_not_found(self):
         """It should not Get an Account that is Not Found"""
         response = self.client.get(f'{BASE_URL}/0')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_account(self):
+        """It should Update an existing account using REST API"""
+        accounts = self._create_accounts(2)
+        test_account, other_account = accounts[0], accounts[1]
+        # change test_account's phone_number
+        test_account_json = self.client.get(f'{BASE_URL}/{test_account.id}').get_json()
+        test_account_json['phone_number'] = "1234567890"
+        response = self.client.put(f'{BASE_URL}/{test_account.id}', json=test_account_json)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # check that the correct account is updated
+        updated_account = self.client.get(f'{BASE_URL}/{test_account.id}').get_json()
+        unchanged_account = self.client.get(f'{BASE_URL}/{other_account.id}').get_json()
+        self.assertEqual(updated_account['phone_number'], "1234567890")
+        self.assertEqual(unchanged_account['phone_number'], other_account.phone_number)
+    
+    def test_update_account_not_found(self):
+        """It should not Update a account that is Not Found"""
+        response = self.client.put(f'{BASE_URL}/0')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
