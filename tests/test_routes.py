@@ -169,3 +169,22 @@ class TestAccountService(TestCase):
         """It should not Update a account that is Not Found"""
         response = self.client.put(f'{BASE_URL}/0')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_account(self):
+        """It should Delete an Account using REST API"""
+        accounts = self._create_accounts(5)
+        count = len(self.client.get(f'{BASE_URL}').get_json())
+        test_account = accounts[0]
+        # delete the account
+        response = self.client.delete(f'{BASE_URL}/{test_account.id}')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertIsNone(response.get_json())
+        # check deletion
+        response = self.client.get(f'{BASE_URL}/{test_account.id}')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(len(self.client.get(f'{BASE_URL}').get_json()), count - 1)
+
+    def test_delete_account_not_found(self):
+        """It should not Delete an Account that is Not Found"""
+        response = self.client.delete(f'{BASE_URL}/0')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
