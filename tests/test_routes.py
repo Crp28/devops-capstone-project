@@ -132,7 +132,7 @@ class TestAccountService(TestCase):
         """It should List all Accounts in the service"""
         response = self.client.get(f'{BASE_URL}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.get_json(),[])
+        self.assertEqual(response.get_json(), [])
 
         accounts = self._create_accounts(5)
         response = self.client.get(f'{BASE_URL}')
@@ -145,8 +145,8 @@ class TestAccountService(TestCase):
         test_acc = self._create_accounts(1)[0]
         response = self.client.get(f'{BASE_URL}/{test_acc.id}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.get_json()['id'],test_acc.id)
-        self.assertEqual(response.get_json()['name'],test_acc.name)
+        self.assertEqual(response.get_json()['id'], test_acc.id)
+        self.assertEqual(response.get_json()['name'], test_acc.name)
 
     def test_read_account_not_found(self):
         """It should not Get an Account that is Not Found"""
@@ -167,7 +167,7 @@ class TestAccountService(TestCase):
         unchanged_account = self.client.get(f'{BASE_URL}/{other_account.id}').get_json()
         self.assertEqual(updated_account['phone_number'], "1234567890")
         self.assertEqual(unchanged_account['phone_number'], other_account.phone_number)
-    
+
     def test_update_account_not_found(self):
         """It should not Update a account that is Not Found"""
         response = self.client.put(f'{BASE_URL}/0')
@@ -211,5 +211,3 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Check for the CORS header
         self.assertEqual(response.headers.get('Access-Control-Allow-Origin'), '*')
-
-    
